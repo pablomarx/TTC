@@ -27,9 +27,6 @@ wire WriteIM, WriteDM, Jump, LoadDM, LoadALU; //Opcode decodes
  always @(posedge Ph0) 
   if(Reset) PC <= 0; 
   else PC <= PCmux; 
-// the Phases.  They are asymmetric -- see .ucf file 
-BUFG ph0Buf(.I(Ph0In), .O(Ph0)); //this is Xilinx - specific 
-BUFG ph1Buf(.I(Ph1In), .O(Ph1)); 
 //the Skip Tester. 1 LUT 
 assign doSkip = (~IM[24] & ~IM[4] &  IM[3] & ALU[31]) | 
                 (~IM[24] &  IM[4] & ~IM[3] & (ALU == 0)) | 
