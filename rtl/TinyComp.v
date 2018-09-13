@@ -12,8 +12,8 @@ wire doSkip;
 wire [31:00] WD; //write data to the register file
 wire [31:00] RFAout; //register file port A read data
 wire [31:00] RFBout; //register file port B read data
-reg [10:0] PC;
-wire [10:0] PCinc, PCinc2, PCmux;
+reg [9:0] PC;
+wire [9:0] PCinc, PCinc2, PCmux;
 wire [31:00] ALU;
 wire [31:00] ALUresult;
 wire [31:00] DM; //the Data memory (1K x 32) output
@@ -141,8 +141,8 @@ assign doSkip =
 assign PCinc = PC + 1;
 assign PCinc2 = PC + 2;
 assign PCmux =
-Jump ? ALU[10:0] :
-(Load & (Rw == 31)) ? DM[10:0] : //subroutine return
+Jump ? ALU[9:0] :
+(Load & (Rw == 31)) ? DM[9:0] : //subroutine return
 doSkip ? PCinc2 :
 PCinc;
 
@@ -181,7 +181,7 @@ Rcy8 ? {ALUresult[7:0], ALUresult[31:8]} :
 ramx im(
 	//the write port
 	.clka(Clock),
-	.addra(RFBout[10:0]),
+	.addra(RFBout[9:0]),
 	.wea(StoreI),
 	.dina(RFAout),
 	
