@@ -195,13 +195,13 @@ ramx im(
 ramw dm(
 	//the write port
 	.clka(Clock),
-	.addra(RFBout[10:0]),
+	.addra(RFBout[6:0]),
 	.wea(Store),
 	.dina(RFAout),
 	
 	//the read port
 	.clkb(~Clock), //use ~Clock since we can't read DM until the address (from IM) is ready.
-	.addrb(RFBout[10:0]),
+	.addrb(RFBout[6:0]),
 	.doutb(DM) //the read port
 );
 

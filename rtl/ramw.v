@@ -1,16 +1,16 @@
 `timescale 1ns / 1ps 
 module ramw(
 	input clka,
-	input [9:0] addra,
+	input [6:0] addra,
 	input wea,
 	input [31:0] dina,
 	
 	input clkb,
-	input [9:0] addrb,
+	input [6:0] addrb,
 	output reg [31:0] doutb
 );
 
-reg [31:0] mem[511:0];
+reg [31:0] mem[127:0];
 
 always @(posedge clka) begin
 	if (wea) begin
