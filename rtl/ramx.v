@@ -10,7 +10,7 @@ module ramx(
 	output reg [31:0] doutb
 );
 
-reg [31:0] mem[10:0];
+reg [31:0] mem[511:0];
 
 initial begin
 	$readmemh("prom.mem", mem);

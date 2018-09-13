@@ -10,7 +10,7 @@ module ramz(
 	output reg [31:0] doutb
 );
 
-reg [31:0] mem[10:0];
+reg [31:0] mem[127:0];
 
 always @(posedge clka) begin
 	if (wea) begin
