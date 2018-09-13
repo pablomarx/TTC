@@ -23,6 +23,8 @@ wire [31:00] AddSubUnit;
 wire [31:00] ALUresult; 
 wire [31:00] DM; //the Data memory (1K x 32) outputs 
 wire [31:00] IM; //the Instruction memory (1K x 32) outputs 
+wire [2:0] Op; // Current instruction op
+wire LoadC; // Current instruction is loading a constant
 wire WriteIM, WriteDM, Jump, LoadDM, LoadALU; //Opcode decodes 
 //----------End of declarations------------ 
 //this is the only register, other than the registers in the block RAMs. 
@@ -34,19 +36,22 @@ wire WriteIM, WriteDM, Jump, LoadDM, LoadALU; //Opcode decodes
 assign OutData = RFAout;
 assign IOaddr = RFBout;
 
+assign Op = IM[2:0];
+assign LoadC = IM[24];
+
 //the Skip Tester. 1 LUT 
-assign doSkip = (~IM[24] & ~IM[4] &  IM[3] & ALU[31]) | 
-                (~IM[24] &  IM[4] & ~IM[3] & (ALU == 0)) | 
-                (~IM[24] &  IM[4] &  IM[3] & InRdy); 
+assign doSkip = (~LoadC & ~IM[4] &  IM[3] & ALU[31]) | 
+                (~LoadC &  IM[4] & ~IM[3] & (ALU == 0)) | 
+                (~LoadC &  IM[4] &  IM[3] & InRdy); 
                 
 //Opcode decode.  7 LUTs 
- assign WriteIM   = ~IM[24] & ~IM[2] & ~IM[1] &  IM[0]; //Op 1 
- assign WriteDM   = ~IM[24] & ~IM[2] &  IM[1] & ~IM[0]; //Op 2 
- assign OutStrobe = ~IM[24] & ~IM[2] &  IM[1] &  IM[0]; //Op 3 
- assign LoadDM    = ~IM[24] &  IM[2] & ~IM[1] & ~IM[0]; //Op 4 
- assign InStrobe  = ~IM[24] &  IM[2] & ~IM[1] &  IM[0]; //Op 5 
- assign Jump      = ~IM[24] &  IM[2] &  IM[1] & ~IM[0]; //op 6 
- assign LoadALU  =  ~IM[24] & ~IM[2] ;                  //Ops 0..3 
+ assign WriteIM   = ~LoadC & (Op == 1); 
+ assign WriteDM   = ~LoadC & (Op == 2); 
+ assign OutStrobe = ~LoadC & (Op == 3); 
+ assign LoadDM    = ~LoadC & (Op == 4); 
+ assign InStrobe  = ~LoadC & (Op == 5);
+ assign Jump      = ~LoadC & (Op == 6);
+ assign LoadALU  =  ~LoadC & ~IM[2] ;                  //Ops 0..3 
 // instantiate the WD multiplexer. 24*2 + 8 = 56 LUTs 
  genvar i; 
  generate 
@@ -55,11 +60,11 @@ assign doSkip = (~IM[24] & ~IM[4] &  IM[3] & ALU[31]) |
    if(i < 10 )begin 
     assign WDmid[i] = (LoadALU & ALU[i]) | (InStrobe & InData[i]) | (LoadDM & DM[i]); 
 //6-in 
-    assign WD[i] = (Jump & PCinc[i]) | (IM[24] & IM[i]) | WDmid[i]; //5-in 
+    assign WD[i] = (Jump & PCinc[i]) | (LoadC & IM[i]) | WDmid[i]; //5-in 
   end else if(i < 24) begin 
     assign WDmid[i] = (LoadALU & ALU[i]) | (InStrobe & InData[i]) | (LoadDM & DM[i]); 
 //6-in 
-    assign WD[i] = (IM[24] & IM[i]) | WDmid[i]; //3-in 
+    assign WD[i] = (LoadC & IM[i]) | WDmid[i]; //3-in 
   end else 
     assign WD[i] = (LoadALU & ALU[i]) | (InStrobe & InData[i]) | (LoadDM & DM[i]); //6-in 
   end //wsblock 
