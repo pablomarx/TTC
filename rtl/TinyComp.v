@@ -207,21 +207,27 @@ ramw dm(
 
 //Instantiate the register file. This has three independent addresses, so two RAMs are needed.
 ramz rfA(
-	.a(Rw),
-	.d(WD), //write port
-	.dpra(Ra),
-	.clk(Clock),
-	.we(WriteRF),
-	.dpo(RFAout) //read port
+	.addra(Rw),
+	.dina(WD), //write port
+	.clka(Clock),
+	.wea(WriteRF),
+
+	//the read port
+	.clkb(~Clock),
+	.addrb(Ra),
+	.doutb(RFAout) //read port
 );
 
 ramz rfB(
-	.a(Rw),
-	.d(WD),
-	.dpra(Rb[4:0]),
-	.clk(Clock),
-	.we(WriteRF),
-	.dpo(RFBout) //read port
+	.addra(Rw),
+	.dina(WD),
+	.clka(Clock),
+	.wea(WriteRF),
+
+	//the read port
+	.clkb(~Clock),
+	.addrb(Rb[4:0]),
+	.doutb(RFBout)
 );
 
 endmodule
