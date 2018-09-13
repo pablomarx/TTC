@@ -78,7 +78,7 @@ endgenerate
 //instantiate the register file.  This has three independent addresses, so two BRAMs are needed. 
 // read after the read and write addresses are stable (rise of Ph1) written at the end of the 
 // instruction (rise of Ph0). 
- ramx rfA(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b0), .dina(WD), //write port 
+ ramx rfA(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
    .clkb(Ph1), .addrb({3'b0, IM[23:17]}), .doutb(RFAout));              //read port 
  ramx rfB(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
    .clkb(Ph1), .addrb({3'b0, IM[16:10]}), .doutb(RFBout));              //read port 
