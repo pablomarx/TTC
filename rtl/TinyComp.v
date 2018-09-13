@@ -84,7 +84,8 @@ endgenerate
    .clkb(Ph1), .addrb({3'b0, IM[16:10]}), .doutb(RFBout));              //read port 
 //instantiate the ALU: An adder/subtractor followed by a shifter 
 //32 LUTs. IM[8] => mask A, IM[7] => complement B, insert Cin 
- assign AddSubUnit = ((IM[8]? 32'b0 : RFAout) + (IM[7] ? ~RFBout : RFBout)) + IM[7];  
+ assign AddSubUnit = IM[8]? (RFBout + (IM[7] ? -1 : 1))              // B-1, B+1
+                          : (RFAout + (IM[7] ? ~RFBout : RFBout));   // A-B, A+B
 //generate the ALU and shifter one bit at a time 
  genvar j; 
  generate 
