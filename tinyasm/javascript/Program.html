@@ -115,9 +115,9 @@
 				Input
 			</div>
 			<textarea id="input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-field aoff  17 0;  define the field offsets for rfref. These names must be defined and must not change.
-field boff  10 0;
-field woff  25 0;
+field aoff  22 0;  define the field offsets for rfref. These names must be defined and must not change.
+field boff  11 0;
+field woff  27 0;
 
 field instruction 0 0; name for instruction memmory
 field rf 1 0;          name for register file
@@ -126,58 +126,63 @@ field data 2 0;        name for data memory
 field := 0 0; noise word
 
 ; Functions
-field +  0  7; the “plus” function 
-field -  1  7; the “minus” function
-field ++ 2  7; the “Rb + 1” function
-field -- 3  7; the “Rb - 1” function
-field &  4  7; the “and” function
-field |  5  7; the “or” function
-field ^  6  7; the “xor” function
+field +  0  8; the “plus” function 
+field -  1  8; the “minus” function
+field ++ 2  8; the “Rb + 1” function
+field -- 3  8; the “Rb - 1” function
+field &  4  8; the “and” function
+field |  5  8; the “or” function
+field ^  6  8; the “xor” function
 
 ; Shifts
-field rcy1  1  5;
-field rcy8  2  5;
-field rcy16 3  5;
+field rcy1  1  6;
+field rcy8  2  6;
 
-; Skips
-field skn  1 3; skip if ALU < 0
-field skz  2 3; skip if ALU = 0
-field ski  3 3; skip if InReady
-
-field Const 1 24;
+field skn 1  3; skip if ALU < 0
+field skz 2  3; skip if ALU = 0
+field ski 3  3; skip if InReady
+field skge 4 3; skip if ALU >= 0
+field sknz 5 3; skip if ALU != 0
+field skni 6 3; skip if ~InReady
+field skp  7 3; skip always
 
 ; Ops
-field Store   1 0;
-field StoreIM 2 0;
-field Out     3 0;
-field Load    4 0;
-field In      5 0;
+field RbConst 1 0; Opcodes
+field IO      2 0;
+field Load    3 0;
+field Store   4 0;
+; field StoreIM 5 0;
 field Jump    6 0;
 field Call    6 0; same as Jump, but clarifies the intent.  Calls will specify an Rw for the Link.
+field Const   7 0;
 
 mem instruction loc 1;  Set current memory to the instruction memory, location 1.
 
-rfref Trash 255; r0 used for both the trashcan and the source of zero 
+rfref Trash 0; r0 used for both the trashcan and the source of zero 
 rfref Zero  0; 
 rfref Link  1; subroutine linkage register
 rfref Stkp 4; stack pointer 
 
 ; Registers
-rfref Counter    1;
+rfref Counter    3;
 rfref LEDValue   2;
-rfref LEDAddress 3;
+rfref Temp 4;
 
-wLEDAddress := Const 0x3ff; 
-wStkp := Const loop;
+field writeLEDs  5 11;
+
 loop:
+   Load wTemp := bCounter;
    wCounter := bCounter ++;
-   wLEDValue := bCounter rcy16;
+   wLEDValue := bCounter rcy8;
    wLEDValue := bLEDValue rcy8;
    wLEDValue := bLEDValue rcy1;
-   wTrash := Out bLEDAddress := aLEDValue;
-   wTrash := Jump bStkp;
-
+   wLEDValue := bLEDValue rcy1;
+   wLEDValue := bLEDValue rcy1;
+   IO writeLEDs := aLEDValue;
+   Store bCounter := aLEDValue;
+   Jump 2;
 end
+
 </textarea>
 		</div>
 		<div class="two">
