@@ -71,16 +71,16 @@ endgenerate
    .clka(Ph0), .addra(RFBout[9:0]), .wea(WriteIM), .dina(RFAout)); //the write port 
     
 //instantiate the DM. Read during Ph1, written (if needed) at the beginning of the next Ph0 
- ramx dm( 
+ ramw dm( 
    .clkb(Ph1), .addrb(RFBout[9:0]),                .doutb(DM),  //the read port 
    .clka(Ph0), .addra(RFBout[9:0]), .wea(WriteDM), .dina(RFAout)); //the write port 
    
 //instantiate the register file.  This has three independent addresses, so two BRAMs are needed. 
 // read after the read and write addresses are stable (rise of Ph1) written at the end of the 
 // instruction (rise of Ph0). 
- ramx rfA(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
+ ramz rfA(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
    .clkb(Ph1), .addrb({3'b0, IM[23:17]}), .doutb(RFAout));              //read port 
- ramx rfB(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
+ ramz rfB(.addra({3'b0, IM[31:25]}), .clka(Ph0), .wea(1'b1), .dina(WD), //write port 
    .clkb(Ph1), .addrb({3'b0, IM[16:10]}), .doutb(RFBout));              //read port 
 //instantiate the ALU: An adder/subtractor followed by a shifter 
 //32 LUTs. IM[8] => mask A, IM[7] => complement B, insert Cin 
