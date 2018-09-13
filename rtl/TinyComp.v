@@ -1,11 +1,16 @@
 `timescale 1ns / 1ps
-
 module TinyComp(
-input Clock, //50 Mhz board clock 
-input Reset, //High true (BTN_SOUTH) 
-output [7:0] LED,
-input RxD,
-output TxD
+	input Clock, 
+	input Reset,
+
+	output [3:0] IOaddr,
+	output IOread, //We are executing an Input instruction
+	output IOwrite, //We are executing an Output instruction
+
+	input [31:00] InValue, // I/O input
+	input InReady,
+
+	output [31:00] OutValue // I/O input
 );
 
 wire doSkip;
@@ -33,48 +38,11 @@ wire WriteRF;
 
 wire [31:0] Ain, Bin; //ALU inputs
 
-wire InReady;
-wire [31:0] InValue;
-reg [7:0] LEDs;
-
 //--------------- The I/O devices ---------------
-wire [3:0] IOaddr; //16 IO devices for now.
-wire readRX;
-wire charReady;
-wire [7:0] RXchar;
-wire writeLED;
-wire writeTX;
-wire TXempty;
-wire [7:0] TXchar;
-
 assign IOaddr = Rb[4:1]; //device addresses are constants.
-assign InReady = ~Rb[0] &
-(((IOaddr == 0) & charReady) | //read RS232 RX
-((IOaddr == 1) & TXempty)); //read RS232 TX
-
-assign InValue = (IOaddr == 0) ? {24'b0, RXchar} : 32'b0;
-assign TXchar = RFAout[7:0];
-assign readRX = ~Rb[0] & (IOaddr == 0) & IO;
-
-assign writeTX = Rb[0] & (IOaddr == 1) & IO;
-assign writeLED = Rb[0] & (IOaddr == 2) & IO;
-
-always @(posedge Clock) if(writeLED) LEDs <= RFAout[7:0];
-assign LED = LEDs;
-
-rs232 user(
-	.clock(Clock),
-	.reset(Reset),
-	.readRX(readRX),
-	.charReady(charReady),
-	.RXchar(RXchar),
-	
-	.writeTX(writeTX),
-	.TXempty(TXempty),
-	.TXchar(TXchar),
-	.TxD(TxD),
-	.RxD(RxD)
-);
+assign IOread = ~Rb[0] & IO;
+assign IOwrite = Rb[0] & IO;
+assign OutValue = RFAout;
 
 //---------------------- The CPU ------------------------
 
