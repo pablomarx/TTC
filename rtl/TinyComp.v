@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps 
 module TinyComp( 
- input Ph0In, Ph1In, //clock phases 
+ input Ph0, Ph1, //clock phases 
  input Reset, 
  input [31:00] InData, // I/O input 
  input InRdy, 
@@ -19,7 +19,6 @@ wire [31:00] AddSubUnit;
 wire [31:00] ALUresult; 
 wire [31:00] DM; //the Data memory (1K x 32) outputs 
 wire [31:00] IM; //the Instruction memory (1K x 32) outputs 
-wire Ph0, Ph1; //the (buffered) clocks 
 wire WriteIM, WriteDM, Jump, LoadDM, LoadALU; //Opcode decodes 
 //----------End of declarations------------ 
 //this is the only register, other than the registers in the block RAMs. 
