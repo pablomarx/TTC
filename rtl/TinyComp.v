@@ -2,9 +2,13 @@
 module TinyComp( 
  input Ph0, Ph1, //clock phases 
  input Reset, 
+
+ output [31:00] IOaddr, // I/O address
  input [31:00] InData, // I/O input 
  input InRdy, 
  output InStrobe, //We are executing an Input instruction 
+
+ output [31:00] OutData, // I/O output 
  output OutStrobe //We are executing an Output instruction 
 ); 
 wire doSkip; 
@@ -26,6 +30,10 @@ wire WriteIM, WriteDM, Jump, LoadDM, LoadALU; //Opcode decodes
  always @(posedge Ph0) 
   if(Reset) PC <= 0; 
   else PC <= PCmux; 
+
+assign OutData = RFAout;
+assign IOaddr = RFBout;
+
 //the Skip Tester. 1 LUT 
 assign doSkip = (~IM[24] & ~IM[4] &  IM[3] & ALU[31]) | 
                 (~IM[24] &  IM[4] & ~IM[3] & (ALU == 0)) | 
