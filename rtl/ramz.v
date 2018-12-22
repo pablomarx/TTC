@@ -10,17 +10,32 @@ module ramz(
 	output reg [31:0] doutb
 );
 
-reg [31:0] mem[127:0];
-
-always @(posedge clka) begin
-	if (wea) begin
-		mem[addra] <= dina;
-	end
-end
-
-always @(posedge clkb) begin
-	doutb <= mem[addrb];
-end
+SB_RAM40_4K mem_lo (
+   .RDATA(doutb[15:0]),
+   .RADDR({4'b0, addrb[6:0]}),
+   .RCLK(clkb),
+   .RCLKE(1'b1),
+   .RE(1'b1),
+   
+   .WDATA(dina[15:0]),
+   .WADDR({4'b0, addra[6:0]}),
+   .WCLK(clka),
+   .WCLKE(1'b1),
+   .WE(wea),
+);
+SB_RAM40_4K mem_hi (
+   .RDATA(doutb[31:16]),
+   .RADDR({4'b0, addrb[6:0]}),
+   .RCLK(clkb),
+   .RCLKE(1'b1),
+   .RE(1'b1),
+   
+   .WDATA(dina[31:16]),
+   .WADDR({4'b0, addra[6:0]}),
+   .WCLK(clka),
+   .WCLKE(1'b1),
+   .WE(wea),
+);
 
 endmodule
  
